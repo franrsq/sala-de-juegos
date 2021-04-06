@@ -1,0 +1,19 @@
+{
+    "email": "Correo",
+    "passwordForgot": "¿Olvidó su contraseña?",
+    "login": "Iniciar sesión",
+    "socialMedia": "O usar una red social",
+    "noAccount": "¿No tienes una cuenta?",
+    "signUp": "Registrarse",
+    "signUpDescription": "Crea tu cuenta llenando el siguiene formulario",
+    "signUpWith": "Registrarse con",
+    "emailRequired": "Por favor ingrese su email",
+    "invalidEmail": "El email ingresado es incorrecto. Intente de nuevo",
+    "passwordRequired": "Por favor ingrese su contraseña!",
+    "passwordMinLength": "La contraseña debe tener 6 caracteres o más",
+    "nickname": "Nickname",
+    "nicknameRequired": "Por favor ingresa tu nickname",
+    "forgotPass": "Restablecer contraseña",
+    "forgotPassDescription": "Ingrese su correo para restablecer su contraseña",
+    "resetPass": "Restablecer"
+}

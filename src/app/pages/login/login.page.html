@@ -1,0 +1,75 @@
+<ion-header>
+  <ion-toolbar>
+    <!--<ion-title>login</ion-title>-->
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card class="ion-no-margin">
+    <ion-img src="assets/images/header1.png"></ion-img>
+    <ion-card-content>
+
+      <form [formGroup]="formLogin" (ngSubmit)="login(formLogin.value)">
+        <div class="wrapform">
+
+          <ion-item>
+            <ion-input type="text" name="email" formControlName="email" placeholder="{{ 'email' | translate }}">
+              <ion-icon name="mail-outline"></ion-icon>
+            </ion-input>
+          </ion-item>
+          <div>
+            <ng-container *ngFor="let validation of validationUserMessage.email">
+              <div class="error_message"
+                *ngIf="formLogin.get('email').hasError(validation.type) && (formLogin.get('email').dirty || formLogin.get('email').touched)">
+                {{validation.message | translate}}
+              </div>
+            </ng-container>
+          </div>
+
+          <ion-item>
+            <ion-input type="password" name="password" formControlName="password" placeholder="**************">
+              <ion-icon name="lock-closed"></ion-icon>
+            </ion-input>
+          </ion-item>
+          <div>
+            <ng-container *ngFor="let validation of validationUserMessage.password">
+              <div class="error_message"
+                *ngIf="formLogin.get('password').hasError(validation.type) && (formLogin.get('password').dirty || formLogin.get('password').touched)">
+                {{validation.message}}
+              </div>
+            </ng-container>
+          </div>
+
+        </div>
+
+        <div class="password_forgot">
+          <ion-button [routerLink]="['/forgot-password']" fill="clear" class="ion-no-padding">{{ 'passwordForgot' |
+            translate }}</ion-button>
+        </div>
+
+        <div class="sign-btn-wrap">
+          <ion-button shape="round" type="submit" fill="solid" class="sign-btn" [disabled]="!formLogin.valid">
+            {{ 'login' | translate }}</ion-button>
+        </div>
+
+        <div class="text-tag">
+          <span>{{ 'socialMedia' | translate }}</span>
+        </div>
+
+        <div class="social-btns">
+          <ion-button fill="clear" class="googlebtn ion-no-padding">
+            <ion-img src="assets/images/google.png"></ion-img>
+          </ion-button>
+        </div>
+
+      </form>
+
+    </ion-card-content>
+  </ion-card>
+
+  <div class="ion-card-footer">
+    <span>{{ 'noAccount' | translate }}</span><button class="ion-no-padding" [routerLink]="['/sign-up']">{{ 'signUp' |
+      translate }}</button>
+  </div>
+
+</ion-content>

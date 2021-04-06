@@ -1,0 +1,19 @@
+{
+    "email": "Email",
+    "passwordForgot": "Forgot password",
+    "login": "Login",
+    "socialMedia": "Or via social media",
+    "noAccount": "Don’t have an account?",
+    "signUp": "Sign Up",
+    "signUpDescription": "Create your account by filling up the form",
+    "signUpWith": "Sign up with",
+    "emailRequired": "Please enter your email",
+    "invalidEmail": "The email entered is incorrect. Try again",
+    "passwordRequired": "Please enter your password!",
+    "passwordMinLength": "The password must be at least 6 characters or more",
+    "nickname": "Nickname",
+    "nicknameRequired": "Please enter your nickname",
+    "forgotPass": "Forgot Password",
+    "forgotPassDescription": "Enter your email here to reset your password",
+    "resetPass": "Reset"
+}

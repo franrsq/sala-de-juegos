@@ -1,0 +1,117 @@
+ion-header {
+    position: absolute;
+}
+
+ion-toolbar {
+    --ion-background-color: transparent;
+    --opacity: 0;
+}
+
+ion-content {
+    --ion-background-color: #e1eaf9 !important;
+    --ion-item-background: transparent !important;
+}
+
+.wrapform {
+    margin-top: 15px;
+}
+.error_message {
+    font-size: 6px;
+    color: red;
+}
+ion-item {
+    color: #647b9d;
+    --border-color: #d4d7db;
+    --highlight-color-focused: #1248a0;
+    --padding-start: 0;
+    --inner-padding-end: 0;
+
+    font-size: 12px;
+    // --color-focused:#1248A0 !important;
+    ion-input {
+        color: #647b9d;
+    }
+    ion-icon {
+        padding-right: 6px;
+        font-size: 18px;
+    }
+
+    ion-input:hover {
+        color: #1248a0;
+    }
+}
+
+.password_forgot {
+    text-align: right;
+    // color:#0A4296
+    ion-button {
+        font-size: 12px;
+        color: #0a4296;
+    }
+}
+
+.sign-btn-wrap {
+    text-align: center;
+    padding-top: 20px;
+    .sign-btn {
+        --ion-primary-color: #215ab7;
+        --background-activated: #e1eaf9;
+        --background-focused: #e1eaf9;
+        --background-hover: #647b9d;
+        color: #f4f6fa;
+        border-radius: 25px;
+        --background: #215ab7;
+        background-color: #215ab7;
+    }
+}
+
+.text-tag {
+    margin-top: 30px;
+    text-align: center;
+    span {
+        font-size: 13px;
+        font-weight: normal;
+        color: #898585;
+    }
+}
+
+.social-btns {
+    margin-top: 25px;
+    text-align: center;
+    ion-button {
+        width: 40px;
+        padding-left: 5px !important;
+    }
+}
+
+ion-card {
+    --ion-background-color: transparent !important;
+    box-shadow: none !important;
+    background-color: transparent !important;
+}
+
+.ion-card-footer {
+    width: 100%;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+
+    span {
+        color: #85888d;
+        font-size: 12px;
+        font-weight: 200;
+    }
+
+    button {
+        background-color: transparent;
+        font-size: 14px;
+        font-weight: 600;
+        padding-left: 3px;
+        color: #535558;
+    }
+
+    button:hover {
+        color: #969393;
+    }
+}
