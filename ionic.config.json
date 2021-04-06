@@ -1,0 +1,8 @@
+{
+  "name": "Sala de Juegos",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular",
+  "id": "eeb6395a"
+}
