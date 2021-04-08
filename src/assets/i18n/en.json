@@ -15,5 +15,7 @@
     "nicknameRequired": "Please enter your nickname",
     "forgotPass": "Forgot Password",
     "forgotPassDescription": "Enter your email here to reset your password",
-    "resetPass": "Reset"
+    "resetPass": "Reset",
+    "loginSuccess": "Login successful",
+    "loginError": "There was an error in login"
 }

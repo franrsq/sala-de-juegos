@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "sala-de-juegos-683c7": {
+      "hosting": {
+        "app": [
+          "sala-de-juegos-683c7"
+        ]
+      }
+    }
+  }
+}

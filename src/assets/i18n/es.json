@@ -15,5 +15,7 @@
     "nicknameRequired": "Por favor ingresa tu nickname",
     "forgotPass": "Restablecer contraseña",
     "forgotPassDescription": "Ingrese su correo para restablecer su contraseña",
-    "resetPass": "Restablecer"
+    "resetPass": "Restablecer",
+    "loginSuccess": "Inicio de sesión exitoso",
+    "loginError": "Hubo un error al iniciar sesión"
 }
