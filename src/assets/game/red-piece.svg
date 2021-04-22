@@ -1,0 +1,8 @@
+<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+ <g>
+  <title>Layer 1</title>
+  <ellipse stroke-width="0" ry="45" rx="45" id="svg_3" cy="50" cx="50" opacity="undefined" stroke="#000" fill="#D40000"/>
+  <ellipse ry="35" rx="35" id="svg_4" cy="50" cx="50" opacity="undefined" stroke-opacity="null" stroke-dasharray="null" stroke-width="0" stroke="#000" fill="#ff0000"/>
+ </g>
+
+</svg>

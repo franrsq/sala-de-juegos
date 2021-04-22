@@ -6,7 +6,7 @@ import { canActivate, redirectUnauthorizedTo, redirectLoggedInTo } from '@angula
 const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['/']);
 
 // Automatically log in users
-const redirectLoggedInToChat = () => redirectLoggedInTo(['/home']);
+const redirectLoggedToHome = () => redirectLoggedInTo(['/home']);
 
 const routes: Routes = [
   {
@@ -20,14 +20,9 @@ const routes: Routes = [
     ...canActivate(redirectUnauthorizedToLogin),
   },
   {
-    path: 'message/:id',
-    loadChildren: () => import('./pages/view-message/view-message.module').then(m => m.ViewMessagePageModule),
-    ...canActivate(redirectUnauthorizedToLogin),
-  },
-  {
     path: 'login',
     loadChildren: () => import('./pages/login/login.module').then(m => m.LoginPageModule),
-    ...canActivate(redirectLoggedInToChat),
+    ...canActivate(redirectLoggedToHome),
   },
   {
     path: 'sign-up',
@@ -37,6 +32,12 @@ const routes: Routes = [
     path: 'forgot-password',
     loadChildren: () => import('./pages/forgot-password/forgot-password.module').then(m => m.ForgotPasswordPageModule)
   },
+  {
+    path: 'game-board/:rows/:cols/:wantsToStart/:aiType',
+    loadChildren: () => import('./pages/game-board/game-board.module').then(m => m.GameBoardPageModule),
+    ...canActivate(redirectUnauthorizedToLogin)
+  },
+
 ];
 
 @NgModule({
