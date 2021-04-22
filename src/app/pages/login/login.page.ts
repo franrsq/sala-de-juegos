@@ -63,7 +63,7 @@ export class LoginPage implements OnInit {
   }
 
   loginGoogle() {
-    this.authService.GoogleAuth()
+    this.authService.googleAuth()
       .then(async () => {
         const toast = await this.toastController.create({
           message: 'Inicio de sesión exitoso',

@@ -3,6 +3,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { Subscription } from 'rxjs';
 import firebase from 'firebase/app';
+import { Router } from '@angular/router';
 
 export interface User {
   uid: string;
@@ -17,22 +18,26 @@ export class AuthService {
   currentUser: User;
   nickNameSubscription: Subscription;
 
-  constructor(private afAuth: AngularFireAuth, private afDb: AngularFireDatabase) {
+  constructor(private afAuth: AngularFireAuth, private afDb: AngularFireDatabase, private router: Router) {
     this.afAuth.onAuthStateChanged((user) => {
       // User sign out
       if (!user) {
+        this.router.navigate(['/login']);
         return;
       }
       this.currentUser = {
-        uid : user.uid,
-        email : user.email,
-        nickname : null
+        uid: user.uid,
+        email: user.email,
+        nickname: null
       }
       this.nickNameSubscription = this.afDb.object('users/' + user.uid)
         .valueChanges()
         .subscribe((data: any) => {
           if (data) {
             this.currentUser['nickname'] = data.nickname;
+            localStorage.setItem('nickname', JSON.stringify(data));
+          } else {
+            localStorage.setItem('nickname', null);
           }
         });
     });
@@ -56,7 +61,7 @@ export class AuthService {
     return this.afAuth.sendPasswordResetEmail(passwordResetEmail);
   }
 
-  GoogleAuth() {
+  googleAuth() {
     return this.authLogin(new firebase.auth.GoogleAuthProvider());
   }
 
