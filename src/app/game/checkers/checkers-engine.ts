@@ -31,7 +31,7 @@ export class CheckersEngine extends Engine {
   initGame(boardManager: BoardManager) {
     this.boardManager = boardManager;
     if (this.aiType !== null) {
-      this.firebaseService.sendCommand('checkers', {
+      this.firebaseService.sendGameCommand('checkers', {
         command: 'play_ai',
         rows: boardManager.board.length,
         columns: boardManager.board[0].length,
@@ -39,7 +39,7 @@ export class CheckersEngine extends Engine {
         wantsToStart: this.wantsToStart
       });
     } else {
-      this.firebaseService.sendCommand('checkers', {
+      this.firebaseService.sendGameCommand('checkers', {
         command: 'match',
         rows: boardManager.board.length,
         columns: boardManager.board[0].length,
@@ -82,7 +82,7 @@ export class CheckersEngine extends Engine {
 
   private requestAiMovement() {
     setTimeout(() => {
-      this.firebaseService.sendCommand('checkers', {
+      this.firebaseService.sendGameCommand('checkers', {
         command: 'move_ai'
       });
     }, 500);
@@ -155,7 +155,7 @@ export class CheckersEngine extends Engine {
         this.selectedSpace = this.boardManager.board[row][column];
       }
     } else if (this.possiblePlays.includes(this.boardManager.board[row][column])) {
-      this.firebaseService.sendCommand('checkers', {
+      this.firebaseService.sendGameCommand('checkers', {
         command: "move",
         fromRow: this.selectedSpace.row,
         fromCol: this.selectedSpace.column,

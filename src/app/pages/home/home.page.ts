@@ -1,29 +1,39 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AlertController } from '@ionic/angular';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { AuthService } from 'src/app/services/auth.service';
+import { FirebaseService } from 'src/app/services/firebase.service';
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage implements OnInit {
+export class HomePage implements OnInit, OnDestroy {
+  private unsubscribe = new Subject<void>();
+
   constructor(
     private authService: AuthService,
-    private alertController: AlertController,
-    private router: Router
+    private firebaseService: FirebaseService,
+    private alertController: AlertController
   ) { }
 
-  items: any[] = [
-    { name: 'Hola', description: 'Hola' }
-  ];
+  items: any[] = [];
 
   ngOnInit() {
     const nickname = JSON.parse(localStorage.getItem('nickname'));
     if (!nickname) {
       this.nicknameDialog();
     }
+    this.firebaseService.getUserRooms()
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(rooms => this.items = rooms);
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe.next();
+    this.unsubscribe.complete();
   }
 
   async nicknameDialog() {
@@ -63,7 +73,7 @@ export class HomePage implements OnInit {
 
   }
 
-  async confirmAbandonRoom() {
+  async confirmAbandonRoom(room) {
     const alert = await this.alertController.create({
       header: 'Abandonar sala',
       message: '¿Está seguro de que desea abandonar la sala?',
@@ -75,13 +85,20 @@ export class HomePage implements OnInit {
         }, {
           text: 'Si',
           handler: () => {
-
+            this.abandonRoom(room);
           }
         }
       ]
     });
 
     await alert.present();
+  }
+
+  abandonRoom(room) {
+    this.firebaseService.sendRoomCommand({
+      command: 'exit',
+      roomId: room.id
+    });
   }
 
   async createRoomDialog() {
@@ -125,7 +142,11 @@ export class HomePage implements OnInit {
   }
 
   private createRoom(roomName, roomDescription) {
-
+    this.firebaseService.sendRoomCommand({
+      command: 'new',
+      name: roomName,
+      description: roomDescription
+    });
   }
 
   async joinRoomDialog() {

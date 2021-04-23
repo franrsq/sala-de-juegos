@@ -35,8 +35,10 @@ export class AuthService {
         .subscribe((data: any) => {
           if (data) {
             this.currentUser['nickname'] = data.nickname;
+            localStorage.setItem('uid', JSON.stringify(this.currentUser.uid));
             localStorage.setItem('nickname', JSON.stringify(data));
           } else {
+            localStorage.setItem('uid', null);
             localStorage.setItem('nickname', null);
           }
         });
