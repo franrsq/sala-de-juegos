@@ -14,12 +14,14 @@
 <ion-content [fullscreen]="true">
   <ion-list *ngIf="items.length > 0; else empty">
     <ion-item *ngFor="let item of items">
-      <ion-label>
-        <h1>{{item.name}}</h1>
-        <p>{{item.description}}</p>
-        <ion-button color="primary" (click)="enterRoom()">Entrar</ion-button>
-        <ion-button color="secondary" (click)="confirmAbandonRoom(item)">Abandonar</ion-button>
-      </ion-label>
+      <ng-container *ngIf="item | async as i">
+        <ion-label>
+          <h1>{{i.name}}</h1>
+          <p>{{i.description}}</p>
+          <ion-button color="secondary" (click)="confirmAbandonRoom(i)">Abandonar</ion-button>
+          <ion-button color="primary" (click)="enterRoom()">Entrar</ion-button>
+        </ion-label>
+      </ng-container>
 
     </ion-item>
   </ion-list>

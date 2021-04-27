@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AlertController } from '@ionic/angular';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
+import { map, takeUntil } from 'rxjs/operators';
 import { AuthService } from 'src/app/services/auth.service';
 import { FirebaseService } from 'src/app/services/firebase.service';
 
@@ -19,7 +19,7 @@ export class HomePage implements OnInit, OnDestroy {
     private alertController: AlertController
   ) { }
 
-  items: any[] = [];
+  items: Observable<any>[] = [];
 
   ngOnInit() {
     const nickname = JSON.parse(localStorage.getItem('nickname'));
@@ -28,7 +28,18 @@ export class HomePage implements OnInit, OnDestroy {
     }
     this.firebaseService.getUserRooms()
       .pipe(takeUntil(this.unsubscribe))
-      .subscribe(rooms => this.items = rooms);
+      .subscribe(rooms => {
+        if (rooms) {
+          this.items = Object.keys(rooms).map(roomId => {
+            return this.firebaseService.getRoomData(roomId).pipe(map(room => {
+              room["id"] = roomId;
+              return room;
+            }))
+          });
+        } else {
+          this.items = [];
+        }
+      });
   }
 
   ngOnDestroy() {
@@ -56,7 +67,7 @@ export class HomePage implements OnInit, OnDestroy {
               alert.message = 'Ingrese un nickname.';
               return false;
             }
-            this.authService.saveNickname(data.nickname);
+            this.authService.saveNickname(data.nickname.trim());
           }
         }
       ]
@@ -132,7 +143,7 @@ export class HomePage implements OnInit, OnDestroy {
               alert.message = 'Ingrese la descripción de la sala.';
               return false;
             }
-            this.createRoom(data.roomName, data.roomDescription);
+            this.createRoom(data.roomName.trim(), data.roomDescription.trim());
           }
         }
       ]
@@ -165,13 +176,13 @@ export class HomePage implements OnInit, OnDestroy {
           role: 'cancel',
           cssClass: 'secondary'
         }, {
-          text: 'Crear',
+          text: 'Unirme',
           handler: (data) => {
             if (!data.roomCode) {
               alert.message = 'Ingrese el código de la sala.';
               return false;
             }
-            this.joinRoom(data.roomCode);
+            this.joinRoom(data.roomCode.trim());
           }
         }
       ]
@@ -181,7 +192,10 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   joinRoom(roomCode) {
-
+    this.firebaseService.sendRoomCommand({
+      command: 'join',
+      room: roomCode
+    });
   }
 
 }
