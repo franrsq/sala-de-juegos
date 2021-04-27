@@ -4,46 +4,43 @@
   </ion-toolbar>
 </ion-header>
 
-<div class="codigo">
-  <div class="hijo2">
-      <ion-title>Codigo: {{codeRoom}}</ion-title>
-  </div>
-  <div class="hijo1">
-    <ion-button color="secondary">Copy</ion-button>
-  </div>
-</div>
-
-<div class="codigo">
-  <div class="hijo2">
-      <ion-title>Usuarios: {{Users}}</ion-title>
-  </div>
-  <div class="hijo1">
-    <ion-button color="secondary">
-      <ion-icon name="eye"></ion-icon>
-    </ion-button>
-  </div>
-</div>
-
 <ion-content>
-  <ion-list-header>
-    Partidas en curso
-  </ion-list-header>
+  <ion-row>
+    <ion-col class="ion-text-center">
+      <ion-label class="header-label">Copiar código</ion-label>
+      <br>
+      <ion-button color="secondary">
+        <ion-icon name="clipboard"></ion-icon>
+      </ion-button>
+    </ion-col>
+    <ion-col class="ion-text-center">
+      <ion-label class="header-label">Usuarios: {{Users}}</ion-label>
+      <br>
+      <ion-button color="secondary">
+        <ion-icon name="eye"></ion-icon>
+      </ion-button>
+    </ion-col>
+  </ion-row>
+
   <ion-list *ngIf="items.length > 0; else empty">
+    <ion-list-header>
+      Partidas en curso
+    </ion-list-header>
     <ion-item *ngFor="let item of items">
       <ion-label>
-        <h1>{{item.player1}} VS {{item.player2}}</h1>
+        <ion-label>{{item.player1}} VS {{item.player2}}</ion-label>
       </ion-label>
-      <div *ngIf="item.isPlaying; else noPlaying">
+      <ng-container *ngIf="item.isPlaying; else noPlaying">
         <ion-button slot="end" color="secondary" (click)="showMatch(item)">
           <ion-icon name="eye"></ion-icon>
         </ion-button>
-      </div>
+      </ng-container>
       <ng-template #noPlaying>
-          <ion-button slot="end" color="secondary" (click)="joinMatch(item)">
-            <ion-icon name="checkmark"></ion-icon>
-          </ion-button>
+        <ion-button slot="end" color="secondary" (click)="joinDialog(item)">
+          <ion-icon name="enter"></ion-icon>
+        </ion-button>
       </ng-template>
-      
+
     </ion-item>
   </ion-list>
 
@@ -64,4 +61,4 @@
   </ng-template>
 </ion-content>
 
-<ion-button class="codigo" color="secondary">Crear Partida</ion-button>
+<ion-button expand="block" color="secondary" (click)="createMatchModal()">Crear Partida</ion-button>

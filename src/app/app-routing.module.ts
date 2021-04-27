@@ -40,6 +40,10 @@ const routes: Routes = [
     path: 'room',
     loadChildren: () => import('./pages/room/room.module').then( m => m.RoomPageModule)
   },
+  {
+    path: 'new-game',
+    loadChildren: () => import('./modals/new-game/new-game.module').then( m => m.NewGamePageModule)
+  },
 
 
 ];

@@ -1,0 +1,77 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Nuevo juego</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list-header>Elije el tamaño del tablero:</ion-list-header>
+  <ion-segment [(ngModel)]="boardSize">
+    <ion-segment-button [value]="6">
+      <ion-label>6 x 6</ion-label>
+    </ion-segment-button>
+    <ion-segment-button [value]="8" checked>
+      <ion-label>8 x 8</ion-label>
+    </ion-segment-button>
+    <ion-segment-button [value]="10">
+      <ion-label>10 x 10</ion-label>
+    </ion-segment-button>
+    <ion-segment-button [value]="12">
+      <ion-label>12 x 12</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <ion-list-header>Empezar de:</ion-list-header>
+  <ion-list>
+    <ion-radio-group [(ngModel)]="wantsToStart">
+      <ion-item>
+        <ion-label>Primero</ion-label>
+        <ion-radio slot="end" color="primary" [value]="true"></ion-radio>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Segundo</ion-label>
+        <ion-radio slot="end" color="primary" [value]="false"></ion-radio>
+      </ion-item>
+    </ion-radio-group>
+  </ion-list>
+
+  <ion-list-header>Modo de juego:</ion-list-header>
+  <ion-segment [(ngModel)]="multiplayer">
+    <ion-segment-button [value]="true">
+      <ion-label>Multijugador</ion-label>
+    </ion-segment-button>
+    <ion-segment-button [value]="false" (click)="multiplayer = false;">
+      <ion-label>Un solo jugador</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <ng-container *ngIf="!multiplayer">
+    <ion-list-header>Nivel de dificultad:</ion-list-header>
+    <ion-list>
+      <ion-radio-group [(ngModel)]="difficulty">
+        <ion-item>
+          <ion-label>Fácil</ion-label>
+          <ion-radio slot="end" color="primary" [value]="0"></ion-radio>
+        </ion-item>
+        <ion-item>
+          <ion-label>Intermedio</ion-label>
+          <ion-radio slot="end" color="primary" [value]="1"></ion-radio>
+        </ion-item>
+        <ion-item>
+          <ion-label>Difícil</ion-label>
+          <ion-radio slot="end" color="primary" [value]="2"></ion-radio>
+        </ion-item>
+      </ion-radio-group>
+    </ion-list>
+  </ng-container>
+</ion-content>
+
+<ion-row>
+  <ion-col>
+    <ion-button expand="block" color="secondary" (click)="dismiss()">Cancelar</ion-button>
+  </ion-col>
+  <ion-col>
+    <ion-button expand="block" color="secondary" (click)="save()">Crear</ion-button>
+  </ion-col>
+</ion-row>

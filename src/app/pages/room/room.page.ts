@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { AlertController } from '@ionic/angular';
+import { AlertController, ModalController } from '@ionic/angular';
+import { NewGamePage } from 'src/app/modals/new-game/new-game.page';
 
 @Component({
   selector: 'app-room',
@@ -9,12 +10,13 @@ import { AlertController } from '@ionic/angular';
 export class RoomPage implements OnInit {
 
   constructor(
-    private alertController: AlertController
+    private alertController: AlertController,
+    private modalController: ModalController
   ) { }
 
   items: any[] = [
-    {player1:"Jairo", player2:"Croqui", isPlaying:true, boardSize:8, turn:"primero"},
-    {player1:"Sebas", player2:"...", isPlaying:false, boardSize:8,turn:"segundo"}
+    { player1: "Jairo", player2: "Croqui", isPlaying: true, boardSize: 8, turn: "primero" },
+    { player1: "Sebas", player2: "...", isPlaying: false, boardSize: 8, turn: "segundo" }
   ];
   codeRoom = 1234;
   nameRoom = "Nombre de la sala";
@@ -23,32 +25,26 @@ export class RoomPage implements OnInit {
   ngOnInit() {
   }
 
-  showMatch(item:any){
+  showMatch(item: any) {
     // llamar a espectar una partida
   }
 
-  showUsers(){
+  showUsers() {
     //mostrar la lista de usuarios
   }
 
-  joinMatch(item:any){
-    this.joinDialog(item);
-  }
-
-  async joinDialog(item:any) {
+  async joinDialog(item: any) {
     const alert = await this.alertController.create({
-      header: "¿Desea unirse a la partida de "+item.player1+"?",
-      message: "Tablero tamaño "+item.boardSize+", juega de "+item.turn,
-      //backdropDismiss: false,
+      header: "¿Desea unirse a la partida de " + item.player1 + "?",
+      message: "Tablero " + item.boardSize + "x" + item.boardSize + "<br>Juega de " + item.turn,
       buttons: [
         {
-          text: 'Unirse',
-          handler: (data) => {
-            return true;
-          }
+          text: "Cancelar",
+          role: 'cancel',
+          cssClass: 'secondary'
         },
         {
-          text:"Cancelar",
+          text: 'Unirme',
           handler: (data) => {
             return true;
           }
@@ -56,5 +52,17 @@ export class RoomPage implements OnInit {
       ]
     });
     await alert.present();
+  }
+
+  async createMatchModal() {
+    const modal = await this.modalController.create({
+      component: NewGamePage
+    });
+    modal.onDidDismiss().then(data => {
+      if (data.data) {
+        
+      }
+    })
+    return await modal.present();
   }
 }
