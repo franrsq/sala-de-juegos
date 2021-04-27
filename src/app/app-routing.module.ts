@@ -36,7 +36,11 @@ const routes: Routes = [
     path: 'game-board/:rows/:cols/:wantsToStart/:aiType',
     loadChildren: () => import('./pages/game-board/game-board.module').then(m => m.GameBoardPageModule),
     ...canActivate(redirectUnauthorizedToLogin)
+  },  {
+    path: 'room',
+    loadChildren: () => import('./pages/room/room.module').then( m => m.RoomPageModule)
   },
+
 
 ];
 

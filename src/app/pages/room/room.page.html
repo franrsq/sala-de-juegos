@@ -1,0 +1,67 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{nameRoom}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<div class="codigo">
+  <div class="hijo2">
+      <ion-title>Codigo: {{codeRoom}}</ion-title>
+  </div>
+  <div class="hijo1">
+    <ion-button color="secondary">Copy</ion-button>
+  </div>
+</div>
+
+<div class="codigo">
+  <div class="hijo2">
+      <ion-title>Usuarios: {{Users}}</ion-title>
+  </div>
+  <div class="hijo1">
+    <ion-button color="secondary">
+      <ion-icon name="eye"></ion-icon>
+    </ion-button>
+  </div>
+</div>
+
+<ion-content>
+  <ion-list-header>
+    Partidas en curso
+  </ion-list-header>
+  <ion-list *ngIf="items.length > 0; else empty">
+    <ion-item *ngFor="let item of items">
+      <ion-label>
+        <h1>{{item.player1}} VS {{item.player2}}</h1>
+      </ion-label>
+      <div *ngIf="item.isPlaying; else noPlaying">
+        <ion-button slot="end" color="secondary" (click)="showMatch(item)">
+          <ion-icon name="eye"></ion-icon>
+        </ion-button>
+      </div>
+      <ng-template #noPlaying>
+          <ion-button slot="end" color="secondary" (click)="joinMatch(item)">
+            <ion-icon name="checkmark"></ion-icon>
+          </ion-button>
+      </ng-template>
+      
+    </ion-item>
+  </ion-list>
+
+  <ng-template #empty>
+    <div style="display: flex; height: 100%; align-items: center;">
+      <div class="viewCenter">
+        <div class="iconEmpty">
+          <ion-icon class="iconSize" name="cloud-offline-outline"></ion-icon>
+        </div>
+
+        <div class="title-style">
+          No hay partidas en curso
+          <br>
+          Crea una.
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</ion-content>
+
+<ion-button class="codigo" color="secondary">Crear Partida</ion-button>
