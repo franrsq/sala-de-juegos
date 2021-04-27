@@ -1,0 +1,20 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Miembros de la sala</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item *ngFor="let item of items">
+      <ion-label>{{item.nickname}}</ion-label>
+      <ion-label>{{item.winRatio}}</ion-label>
+      <ion-note *ngIf="item.status == 0; else offline" color="success" slot="end">En línea</ion-note>
+      <ng-template #offline>
+        <ion-note color="dark" slot="end">Desconectado</ion-note>
+      </ng-template>
+    </ion-item>
+  </ion-list>
+</ion-content>
+
+<ion-button expand="block" color="secondary" (click)="dismiss()">Cerrar</ion-button>

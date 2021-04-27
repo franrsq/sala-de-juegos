@@ -27,9 +27,7 @@
       Partidas en curso
     </ion-list-header>
     <ion-item *ngFor="let item of items">
-      <ion-label>
-        <ion-label>{{item.player1}} VS {{item.player2}}</ion-label>
-      </ion-label>
+      <ion-label>{{item.player1}} VS {{item.player2}}</ion-label>
       <ng-container *ngIf="item.isPlaying; else noPlaying">
         <ion-button slot="end" color="secondary" (click)="showMatch(item)">
           <ion-icon name="eye"></ion-icon>

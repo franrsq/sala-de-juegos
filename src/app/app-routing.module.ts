@@ -44,6 +44,10 @@ const routes: Routes = [
     path: 'new-game',
     loadChildren: () => import('./modals/new-game/new-game.module').then( m => m.NewGamePageModule)
   },
+  {
+    path: 'room-members',
+    loadChildren: () => import('./modals/room-members/room-members.module').then( m => m.RoomMembersPageModule)
+  },
 
 
 ];
