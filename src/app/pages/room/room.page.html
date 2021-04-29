@@ -1,6 +1,9 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>{{nameRoom}}</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{roomName}}</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -9,54 +12,57 @@
     <ion-col class="ion-text-center">
       <ion-label class="header-label">Copiar código</ion-label>
       <br>
-      <ion-button color="secondary">
+      <ion-button color="secondary" (click)="copyCode()">
         <ion-icon name="clipboard"></ion-icon>
       </ion-button>
     </ion-col>
     <ion-col class="ion-text-center">
-      <ion-label class="header-label">Usuarios: {{Users}}</ion-label>
+      <ion-label class="header-label">Usuarios: {{users}}</ion-label>
       <br>
-      <ion-button color="secondary">
+      <ion-button color="secondary" (click)="showUsers()">
         <ion-icon name="eye"></ion-icon>
       </ion-button>
     </ion-col>
   </ion-row>
 
-  <ion-list *ngIf="items.length > 0; else empty">
+  <ion-list>
     <ion-list-header>
       Partidas en curso
     </ion-list-header>
-    <ion-item *ngFor="let item of items">
-      <ion-label>{{item.player1}} VS {{item.player2}}</ion-label>
-      <ng-container *ngIf="item.isPlaying; else noPlaying">
+    <ion-item *ngFor="let item of matches">
+      <ng-container *ngIf="item | async as match">
+        <ion-label>
+          <h2>Jugadores: {{match.player1.nickname}} VS {{match.player2.nickname}}</h2>
+          <h3>Tamaño: {{match.rows}}x{{match.cols}}</h3>
+        </ion-label>
         <ion-button slot="end" color="secondary" (click)="showMatch(item)">
           <ion-icon name="eye"></ion-icon>
         </ion-button>
       </ng-container>
-      <ng-template #noPlaying>
-        <ion-button slot="end" color="secondary" (click)="joinDialog(item)">
-          <ion-icon name="enter"></ion-icon>
-        </ion-button>
-      </ng-template>
-
     </ion-item>
   </ion-list>
 
-  <ng-template #empty>
-    <div style="display: flex; height: 100%; align-items: center;">
-      <div class="viewCenter">
-        <div class="iconEmpty">
-          <ion-icon class="iconSize" name="cloud-offline-outline"></ion-icon>
-        </div>
+  <ion-list>
+    <ion-list-header>
+      Esperando partida
+    </ion-list-header>
+    <ion-item *ngFor="let item of waitingList">
+      <ng-container *ngIf="item | async as waiting">
+        <ion-label>
+          <h2>Jugador: {{waiting.nickname}}</h2>
+          <h3>Tamaño: {{waiting.rows}}x{{waiting.cols}}</h3>
+          <h3 *ngIf="waiting.wantsToStart; else second">Empieza: primero</h3>
+          <ng-template #second>
+            <h3>Empieza: segundo</h3>
+          </ng-template>
+        </ion-label>
+        <ion-button slot="end" color="secondary" (click)="joinDialog(waiting)">
+          <ion-icon name="enter"></ion-icon>
+        </ion-button>
+      </ng-container>
+    </ion-item>
+  </ion-list>
 
-        <div class="title-style">
-          No hay partidas en curso
-          <br>
-          Crea una.
-        </div>
-      </div>
-    </div>
-  </ng-template>
 </ion-content>
 
 <ion-button expand="block" color="secondary" (click)="createMatchModal()">Crear Partida</ion-button>

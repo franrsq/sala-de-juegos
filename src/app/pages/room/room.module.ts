@@ -7,14 +7,18 @@ import { IonicModule } from '@ionic/angular';
 import { RoomPageRoutingModule } from './room-routing.module';
 
 import { RoomPage } from './room.page';
+import { Clipboard } from '@ionic-native/clipboard/ngx';
+import { ClipboardModule } from 'ngx-clipboard';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    RoomPageRoutingModule
+    RoomPageRoutingModule,
+    ClipboardModule
   ],
-  declarations: [RoomPage]
+  declarations: [RoomPage],
+  providers: [Clipboard]
 })
-export class RoomPageModule {}
+export class RoomPageModule { }

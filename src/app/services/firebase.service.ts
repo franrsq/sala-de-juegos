@@ -15,30 +15,41 @@ export class FirebaseService {
     return this.database.object(`games/${gamePath}/${gameId}`).valueChanges();
   }
 
-  sendGameCommand(gamePath, command: {}) {
+  async sendGameCommand(gamePath, command: {}) {
     const pushId = this.database.createPushId();
-    return this.database.object(`commands/${gamePath}/${this.auth.currentUser.uid}/${pushId}`).set(command);
+    return this.database.object(`commands/${gamePath}/${(await this.auth.getUser()).uid}/${pushId}`).set(command);
   }
 
-  observePlayerStates() {
-    return this.database.object(`player_states/${this.auth.currentUser.uid}`).valueChanges();
+  async observePlayerStates() {
+    return this.database.object(`player_states/${(await this.auth.getUser()).uid}`).valueChanges();
   }
 
   getPlayerData(uid: string) {
     return this.database.object(`users/${uid}`).valueChanges().pipe(take(1));
   }
 
-  sendRoomCommand(command: {}) {
+  async sendRoomCommand(command: {}) {
     const pushId = this.database.createPushId();
-    return this.database.object(`commands/room/${this.auth.currentUser.uid}/${pushId}`).set(command);
+    return this.database.object(`commands/room/${(await this.auth.getUser()).uid}/${pushId}`).set(command);
   }
 
-  getUserRooms() {
-    const uid = JSON.parse(localStorage.getItem("uid"));
-    return this.database.object(`userRooms/${uid}`).valueChanges();
+  async observeUserRooms() {
+    return this.database.object(`userRooms/${(await this.auth.getUser()).uid}`).valueChanges();
   }
 
-  getRoomData(id) {
+  observeRoomData(id) {
     return this.database.object(`rooms/${id}`).valueChanges();
+  }
+
+  observePlayerData(uid) {
+    return this.database.object(`users/${uid}`).valueChanges();
+  }
+
+  observeMatchesList(roomId) {
+    return this.database.object(`game-room/${roomId}`).valueChanges();
+  }
+
+  observeWaitingList(roomId) {
+    return this.database.object(`matching/${roomId}`).valueChanges();
   }
 }

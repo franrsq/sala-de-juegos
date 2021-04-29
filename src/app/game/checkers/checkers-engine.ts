@@ -28,7 +28,7 @@ export class CheckersEngine extends Engine {
     this.playerUid = JSON.parse(localStorage.getItem('user')).uid;
   }
 
-  initGame(boardManager: BoardManager) {
+  async initGame(boardManager: BoardManager) {
     this.boardManager = boardManager;
     if (this.aiType !== null) {
       this.firebaseService.sendGameCommand('checkers', {
@@ -46,7 +46,7 @@ export class CheckersEngine extends Engine {
         wantsToStart: this.wantsToStart
       });
     }
-    this.firebaseService.observePlayerStates()
+    (await this.firebaseService.observePlayerStates())
       .pipe(takeUntil(this.unsubscribe))
       .subscribe((res: any) => {
         if (res && res.matching) {

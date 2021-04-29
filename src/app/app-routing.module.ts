@@ -36,17 +36,21 @@ const routes: Routes = [
     path: 'game-board/:rows/:cols/:wantsToStart/:aiType',
     loadChildren: () => import('./pages/game-board/game-board.module').then(m => m.GameBoardPageModule),
     ...canActivate(redirectUnauthorizedToLogin)
-  },  {
-    path: 'room',
-    loadChildren: () => import('./pages/room/room.module').then( m => m.RoomPageModule)
+  },
+  {
+    path: 'room/:roomId',
+    loadChildren: () => import('./pages/room/room.module').then( m => m.RoomPageModule),
+    ...canActivate(redirectUnauthorizedToLogin)
   },
   {
     path: 'new-game',
-    loadChildren: () => import('./modals/new-game/new-game.module').then( m => m.NewGamePageModule)
+    loadChildren: () => import('./modals/new-game/new-game.module').then( m => m.NewGamePageModule),
+    ...canActivate(redirectUnauthorizedToLogin)
   },
   {
     path: 'room-members',
-    loadChildren: () => import('./modals/room-members/room-members.module').then( m => m.RoomMembersPageModule)
+    loadChildren: () => import('./modals/room-members/room-members.module').then( m => m.RoomMembersPageModule),
+    ...canActivate(redirectUnauthorizedToLogin)
   },
 
 

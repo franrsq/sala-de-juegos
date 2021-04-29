@@ -1,47 +1,26 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { Subscription } from 'rxjs';
 import firebase from 'firebase/app';
 import { Router } from '@angular/router';
-
-export interface User {
-  uid: string;
-  email: string;
-  nickname: string;
-}
+import { take } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  currentUser: User;
-  nickNameSubscription: Subscription;
+  constructor(private afAuth: AngularFireAuth, private afDb: AngularFireDatabase, private router: Router,
+    private ngZone: NgZone) {
 
-  constructor(private afAuth: AngularFireAuth, private afDb: AngularFireDatabase, private router: Router) {
-    this.afAuth.onAuthStateChanged((user) => {
+    this.afAuth.onAuthStateChanged(async (user) => {
       // User sign out
       if (!user) {
-        this.router.navigate(['/login']);
+        this.ngZone.run(() => {
+          this.router.navigate(['/login']);
+        });
         return;
       }
-      this.currentUser = {
-        uid: user.uid,
-        email: user.email,
-        nickname: null
-      }
-      this.nickNameSubscription = this.afDb.object('users/' + user.uid)
-        .valueChanges()
-        .subscribe((data: any) => {
-          if (data) {
-            this.currentUser['nickname'] = data.nickname;
-            localStorage.setItem('uid', JSON.stringify(this.currentUser.uid));
-            localStorage.setItem('nickname', JSON.stringify(data));
-          } else {
-            localStorage.setItem('uid', null);
-            localStorage.setItem('nickname', null);
-          }
-        });
     });
   }
 
@@ -71,14 +50,27 @@ export class AuthService {
     return this.afAuth.signInWithPopup(provider);
   }
 
-  saveNickname(nickname: string) {
-    this.saveNickName(nickname, this.currentUser.uid);
+  async saveNickname(nickname: string) {
+    this.saveNickName(nickname, (await this.getUser()).uid);
   }
 
   private saveNickName(nickname: string, uid: string) {
     return this.afDb.object(`users/${uid}`).set({
       nickname: nickname
     });
+  }
+
+  async getUser() {
+    return await this.afAuth.currentUser;
+  }
+
+  async getUserNickname() {
+    let user = await this.getUser();
+    let nicknamePr: any = this.afDb.object('users/' + user.uid)
+      .valueChanges()
+      .pipe(take(1))
+      .toPromise();
+    return (await nicknamePr)?.nickname;
   }
 
   signOut() {

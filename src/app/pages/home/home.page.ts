@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
@@ -12,29 +13,28 @@ import { FirebaseService } from 'src/app/services/firebase.service';
 })
 export class HomePage implements OnInit, OnDestroy {
   private unsubscribe = new Subject<void>();
+  items: Observable<any>[] = [];
 
   constructor(
     private authService: AuthService,
     private firebaseService: FirebaseService,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private router: Router
   ) { }
 
-  items: Observable<any>[] = [];
-
-  ngOnInit() {
-    const nickname = JSON.parse(localStorage.getItem('nickname'));
-    if (!nickname) {
+  async ngOnInit() {
+    if (!await this.authService.getUserNickname()) {
       this.nicknameDialog();
     }
-    this.firebaseService.getUserRooms()
+    (await this.firebaseService.observeUserRooms())
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(rooms => {
         if (rooms) {
           this.items = Object.keys(rooms).map(roomId => {
-            return this.firebaseService.getRoomData(roomId).pipe(map(room => {
+            return this.firebaseService.observeRoomData(roomId).pipe(map(room => {
               room["id"] = roomId;
               return room;
-            }))
+            }));
           });
         } else {
           this.items = [];
@@ -80,8 +80,8 @@ export class HomePage implements OnInit, OnDestroy {
     this.authService.signOut();
   }
 
-  enterRoom() {
-
+  enterRoom(room) {
+    this.router.navigate(['room', room.id]);
   }
 
   async confirmAbandonRoom(room) {
