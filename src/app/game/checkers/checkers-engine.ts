@@ -9,104 +9,86 @@ import { RedPiece } from "./red-piece";
 
 export class CheckersEngine extends Engine {
   private unsubscribe = new Subject<void>();
-  aiType;
-  wantsToStart;
-  loading = new BehaviorSubject<boolean>(true);
+  gameId
   boardManager: BoardManager;
   selectedSpace: Space = null;
   possiblePlays: Space[] = [];
   turnUid;
   playerIsRed;
-  playerUid;
   gameStatus = new BehaviorSubject<number>(Engine.GAME_IN_PLAY);
   firstLoad = true;
 
-  constructor(firebaseService: FirebaseService, aiType = null, wantsToStart = null) {
+  constructor(firebaseService: FirebaseService, gameId) {
     super(firebaseService);
-    this.aiType = aiType;
-    this.wantsToStart = wantsToStart;
-    this.playerUid = JSON.parse(localStorage.getItem('user')).uid;
+    this.gameId = gameId;
   }
 
   async initGame(boardManager: BoardManager) {
     this.boardManager = boardManager;
-    if (this.aiType !== null) {
-      this.firebaseService.sendGameCommand('checkers', {
-        command: 'play_ai',
-        rows: boardManager.board.length,
-        columns: boardManager.board[0].length,
-        aiType: this.aiType,
-        wantsToStart: this.wantsToStart
-      });
-    } else {
-      this.firebaseService.sendGameCommand('checkers', {
-        command: 'match',
-        rows: boardManager.board.length,
-        columns: boardManager.board[0].length,
-        wantsToStart: this.wantsToStart
-      });
-    }
-    (await this.firebaseService.observePlayerStates())
+    this.firebaseService.observeGame(this.gameId)
       .pipe(takeUntil(this.unsubscribe))
-      .subscribe((res: any) => {
-        if (res && res.matching) {
-          this.loading.next(true);
-        }
-        else if (res) {
-          this.loading.next(false);
-          this.firebaseService.observeGame(res.gamePath, res.game)
-            .pipe(takeUntil(this.unsubscribe))
-            .subscribe((res: any) => {
-              if (res) {
-                this.loadPlayerInfo(res.p1uid, res.p2uid);
-                this.turnUid = res.turn;
-                this.loadGameMatrix(res.gameMatrix);
-                if (this.turnUid == 0 || this.turnUid == 1 || this.turnUid == 2) {
-                  this.requestAiMovement();
-                }
-                if (!this.firstLoad) {
-                  if (res.winner == this.playerUid) {
-                    this.gameStatus.next(Engine.GAME_WON);
-                  } else if (res.winner != -1) {
-                    this.gameStatus.next(Engine.GAME_LOST);
-                  }
-                  this.playerIsRed = this.playerUid == res.p2uid;
-                } else {
-                  this.firstLoad = false;
-                }
+      .subscribe(async (res: any) => {
+        if (res) {
+          const uid = (await this.firebaseService.getUser()).uid;
+          this.loadPlayerInfo(res.turn, res.p1uid, res.p2uid);
+          this.turnUid = res.turn;
+          this.loadGameMatrix(res.gameMatrix);
+          if (this.turnUid == 0 || this.turnUid == 1 || this.turnUid == 2) {
+            this.requestAiMovement();
+          }
+          if (!this.firstLoad) {
+            if (res.winner == uid) {
+              this.gameStatus.next(Engine.GAME_WON);
+            } else if (res.winner != -1) {
+              if (res.p1uid != uid && res.p2uid) {
+                this.gameStatus.next(Engine.GAME_FINISHED);
+              } else {
+                this.gameStatus.next(Engine.GAME_LOST);
               }
-            });
+            }
+          } else {
+            this.playerIsRed = uid == res.p2uid;
+            this.firstLoad = false;
+          }
         }
       });
   }
 
   private requestAiMovement() {
     setTimeout(() => {
-      this.firebaseService.sendGameCommand('checkers', {
+      this.firebaseService.sendGameCommand({
         command: 'move_ai'
       });
     }, 500);
   }
 
-  private loadPlayerInfo(p1Uid, p2Uid) {
+  private loadPlayerInfo(turn, p1Uid, p2Uid) {
     if (p1Uid == 0 || p1Uid == 1 || p1Uid == 2) {
       this.boardManager.player1 = this.getAIPlayerText(p1Uid);
+      this.boardManager.currentPlayer = 'IA';
     } else {
       this.firebaseService.getPlayerData(p1Uid).subscribe((data: any) => {
         let wins = (data.wins || 0);
         let defeats = (data.defeats || 0);
         let wd = (defeats == 0) ? 0 : wins / (wins + defeats);
         this.boardManager.player1 = `${data.nickname}   W/D: ${wd}`;
+        if (turn == p1Uid) {
+          this.boardManager.currentPlayer = `${data.nickname}`;
+        }
       });
     }
     if (p2Uid == 0 || p2Uid == 1 || p2Uid == 2) {
       this.boardManager.player2 = this.getAIPlayerText(p2Uid);
+      this.boardManager.currentPlayer = 'IA';
     } else {
       this.firebaseService.getPlayerData(p2Uid).subscribe((data: any) => {
         let wins = (data.wins || 0);
         let defeats = (data.defeats || 0);
         let wd = (defeats == 0) ? 0 : wins / (wins + defeats);
         this.boardManager.player2 = `${data.nickname}   W/D: ${wd}`;
+        if (turn == p2Uid) {
+          this.boardManager.currentPlayer = `${data.nickname}`;
+        }
       });
     }
   }
@@ -142,20 +124,20 @@ export class CheckersEngine extends Engine {
     }
   }
 
-  click(row, column) {
+  async click(row, column) {
     this.boardManager.removeHighlight();
     // If is the first select, highlight all possible positions or if the user selects
     // another piece that is not highlighted recalculate the highlight
     if (!this.selectedSpace || (!this.possiblePlays.includes(this.boardManager.board[row][column])
       && this.boardManager.board[row][column].piece)) {
-      this.calculatePossiblePlays(row, column);
+      await this.calculatePossiblePlays(row, column);
       this.boardManager.removeHighlight();
       if (this.possiblePlays != []) {
         this.boardManager.highlight(this.possiblePlays);
         this.selectedSpace = this.boardManager.board[row][column];
       }
     } else if (this.possiblePlays.includes(this.boardManager.board[row][column])) {
-      this.firebaseService.sendGameCommand('checkers', {
+      this.firebaseService.sendGameCommand({
         command: "move",
         fromRow: this.selectedSpace.row,
         fromCol: this.selectedSpace.column,
@@ -218,8 +200,9 @@ export class CheckersEngine extends Engine {
     }
   }
 
-  calculatePossiblePlays(row, column) {
-    if (this.turnUid == this.playerUid && this.boardManager.board[row][column].piece != null) {
+  async calculatePossiblePlays(row, column) {
+    if (this.turnUid == (await this.firebaseService.getUser()).uid
+      && this.boardManager.board[row][column].piece != null) {
       this.possiblePlays = this.possibleSpaces(row, column);
     }
   }
@@ -323,10 +306,6 @@ export class CheckersEngine extends Engine {
     }
 
     return spaces;
-  }
-
-  isLoading(): Observable<boolean> {
-    return this.loading.asObservable().pipe(takeUntil(this.unsubscribe));
   }
 
   getGameStatus(): Observable<number> {

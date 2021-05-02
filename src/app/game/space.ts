@@ -15,7 +15,7 @@ export class Space {
     this.highlightStyle = highlightStyle;
   }
 
-  getStyle() {
+  get style() {
     if (this.highlight) {
       return this.highlightStyle;
     }

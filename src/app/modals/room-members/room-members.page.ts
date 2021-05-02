@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
+import { map } from 'rxjs/operators';
+import { FirebaseService } from 'src/app/services/firebase.service';
 
 @Component({
   selector: 'app-room-members',
@@ -8,14 +10,19 @@ import { ModalController } from '@ionic/angular';
 })
 export class RoomMembersPage implements OnInit {
 
-  items: any[] = [
-    { nickname: "Jairo", winRatio: "0.80", status: 0 },
-    { nickname: "Sebas", winRatio: "0.85", status: 1 }
-  ];
+  @Input() roomId: string;
+  items: any[] = [];
 
-  constructor(private modalController: ModalController) { }
+  constructor(private modalController: ModalController, private firebaseService: FirebaseService) { }
 
   ngOnInit() {
+    this.firebaseService.observeRoomMembers(this.roomId).subscribe((members: any) => {
+      this.items = Object.keys(members).map((userId: any) => {
+        return this.firebaseService.observePlayerData(userId).pipe(map(user => {
+          return user;
+        }));
+      });
+    });
   }
 
   dismiss() {

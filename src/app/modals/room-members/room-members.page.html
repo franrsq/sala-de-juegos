@@ -6,13 +6,15 @@
 
 <ion-content>
   <ion-list>
-    <ion-item *ngFor="let item of items">
-      <ion-label>{{item.nickname}}</ion-label>
-      <ion-label>{{item.winRatio}}</ion-label>
-      <ion-note *ngIf="item.status == 0; else offline" color="success" slot="end">En línea</ion-note>
-      <ng-template #offline>
-        <ion-note color="dark" slot="end">Desconectado</ion-note>
-      </ng-template>
+    <ion-item *ngFor="let i of items">
+      <ng-container  *ngIf="i | async as item">
+        <ion-label>{{item.nickname}}</ion-label>
+        <!--<ion-label>{{item.winRatio}}</ion-label>-->
+        <ion-note *ngIf="item.online; else offline" color="success" slot="end">En línea</ion-note>
+        <ng-template #offline>
+          <ion-note color="dark" slot="end">Desconectado</ion-note>
+        </ng-template>
+      </ng-container>
     </ion-item>
   </ion-list>
 </ion-content>

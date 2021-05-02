@@ -17,7 +17,7 @@
       </ion-button>
     </ion-col>
     <ion-col class="ion-text-center">
-      <ion-label class="header-label">Usuarios: {{users}}</ion-label>
+      <ion-label class="header-label">Usuarios: <ion-label color="success">{{users}}</ion-label></ion-label>
       <br>
       <ion-button color="secondary" (click)="showUsers()">
         <ion-icon name="eye"></ion-icon>
@@ -35,7 +35,7 @@
           <h2>Jugadores: {{match.player1.nickname}} VS {{match.player2.nickname}}</h2>
           <h3>Tamaño: {{match.rows}}x{{match.cols}}</h3>
         </ion-label>
-        <ion-button slot="end" color="secondary" (click)="showMatch(item)">
+        <ion-button slot="end" color="secondary" (click)="showMatch(match)">
           <ion-icon name="eye"></ion-icon>
         </ion-button>
       </ng-container>

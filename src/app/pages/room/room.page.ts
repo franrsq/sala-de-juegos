@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, ModalController, ToastController } from '@ionic/angular';
-import { combineLatest, Subject, zip } from 'rxjs';
-import { map, takeUntil } from 'rxjs/operators';
+import { combineLatest, of, Subject, zip } from 'rxjs';
+import { map, switchMap, takeUntil } from 'rxjs/operators';
 import { NewGamePage } from 'src/app/modals/new-game/new-game.page';
 import { FirebaseService } from 'src/app/services/firebase.service';
 import { Clipboard } from '@ionic-native/clipboard/ngx';
@@ -39,6 +39,8 @@ export class RoomPage implements OnInit, OnDestroy {
     this.observeRoomData();
     this.observeMatchesList();
     this.observeWaitingList();
+    this.observePlayerState();
+    this.firebaseService.observeConnectedUsers(this.roomId).subscribe(data => this.users = data);
   }
 
   observeRoomData() {
@@ -66,9 +68,18 @@ export class RoomPage implements OnInit, OnDestroy {
       .subscribe((matches: any) => {
         if (matches) {
           this.matches = Object.values(matches).map((match: any, index) => {
-            const p1Obs = this.firebaseService.observePlayerData(match.p1uid);
-            const p2Obs = this.firebaseService.observePlayerData(match.p2uid);
-            return zip(p1Obs, p2Obs).pipe(map(players => {
+            let p1Obs, p2Obs;
+            if (match.p1uid == 0 || match.p1uid == 1 || match.p1uid == 2) {
+              p1Obs = of({ nickname: 'IA' });
+            } else {
+              p1Obs = this.firebaseService.observePlayerData(match.p1uid);
+            }
+            if (match.p2uid == 0 || match.p2uid == 1 || match.p2uid == 2) {
+              p2Obs = of({ nickname: 'IA' });
+            } else {
+              p2Obs = this.firebaseService.observePlayerData(match.p2uid);
+            }
+            return combineLatest([p1Obs, p2Obs]).pipe(map(players => {
               match['player1'] = players[0];
               match['player2'] = players[1];
               return match;
@@ -97,6 +108,22 @@ export class RoomPage implements OnInit, OnDestroy {
       });
   }
 
+  async observePlayerState() {
+    (await this.firebaseService.observePlayerStates()).pipe(
+      takeUntil(this.unsubscribe),
+      switchMap((state: any) => {
+        if (state?.game) {
+          return this.firebaseService.getGameInfo(this.roomId, state.game);
+        }
+        return of(null);
+      })
+    ).subscribe((gameInfo: any) => {
+      if (gameInfo) {
+        this.router.navigate(['/game-board', this.roomId, gameInfo.game, gameInfo.rows, gameInfo.cols]);
+      }
+    });
+  }
+
   async copyCode() {
     if (Capacitor.isNative) {
       this.clipboard.copy(this.roomId);
@@ -112,13 +139,15 @@ export class RoomPage implements OnInit, OnDestroy {
   }
 
   showMatch(item: any) {
-    // llamar a espectar una partida
+    this.router.navigate(['/game-board', this.roomId, item.game, item.rows, item.cols]);
   }
 
   async showUsers() {
-    //mostrar la lista de usuarios
     const modal = await this.modalController.create({
-      component: RoomMembersPage
+      component: RoomMembersPage,
+      componentProps: {
+        'roomId': this.roomId
+      }
     });
     modal.present();
   }
@@ -143,8 +172,8 @@ export class RoomPage implements OnInit, OnDestroy {
     await alert.present();
   }
 
-  joinMatch(id) {
-    this.firebaseService.sendGameCommand('checkers', {
+  async joinMatch(id) {
+    this.firebaseService.sendGameCommand({
       command: 'join',
       room: this.roomId,
       matchingId: id
@@ -159,7 +188,7 @@ export class RoomPage implements OnInit, OnDestroy {
       const matchData = data.data;
       if (matchData) {
         if (matchData.multiplayer) {
-          this.firebaseService.sendGameCommand('checkers', {
+          this.firebaseService.sendGameCommand({
             command: 'match',
             room: this.roomId,
             rows: matchData.boardSize,
@@ -167,7 +196,14 @@ export class RoomPage implements OnInit, OnDestroy {
             wantsToStart: matchData.wantsToStart
           });
         } else {
-
+          this.firebaseService.sendGameCommand({
+            command: 'play_ai',
+            room: this.roomId,
+            rows: matchData.boardSize,
+            columns: matchData.boardSize,
+            aiType: matchData.difficulty,
+            wantsToStart: matchData.wantsToStart
+          });
         }
       }
     })

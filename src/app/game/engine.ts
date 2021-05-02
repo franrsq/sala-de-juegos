@@ -7,6 +7,7 @@ export abstract class Engine {
   static readonly GAME_IN_PLAY = 0;
   static readonly GAME_LOST = 1;
   static readonly GAME_WON = 2;
+  static readonly GAME_FINISHED = 3;
 
   firebaseService: FirebaseService;
   aiType: number;
@@ -21,8 +22,6 @@ export abstract class Engine {
   abstract initGame(boardManager: BoardManager);
 
   abstract click(row: Number, column: Number);
-
-  abstract isLoading(): Observable<boolean>;
 
   abstract getGameStatus(): Observable<number>;
 

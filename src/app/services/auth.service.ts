@@ -1,17 +1,17 @@
-import { Injectable, NgZone } from '@angular/core';
+import { Injectable, Injector, NgZone } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFireDatabase } from '@angular/fire/database';
-import { Subscription } from 'rxjs';
 import firebase from 'firebase/app';
 import { Router } from '@angular/router';
 import { take } from 'rxjs/operators';
+import { FirebaseService } from './firebase.service'
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   constructor(private afAuth: AngularFireAuth, private afDb: AngularFireDatabase, private router: Router,
-    private ngZone: NgZone) {
+    private ngZone: NgZone, private injector: Injector) {
 
     this.afAuth.onAuthStateChanged(async (user) => {
       // User sign out
@@ -55,7 +55,7 @@ export class AuthService {
   }
 
   private saveNickName(nickname: string, uid: string) {
-    return this.afDb.object(`users/${uid}`).set({
+    return this.afDb.object(`users/${uid}`).update({
       nickname: nickname
     });
   }
@@ -74,6 +74,8 @@ export class AuthService {
   }
 
   signOut() {
+    const firebaseService = this.injector.get(FirebaseService);
+    firebaseService.setPresence(false);
     return this.afAuth.signOut();
   }
 }

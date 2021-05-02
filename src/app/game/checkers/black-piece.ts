@@ -6,7 +6,7 @@ export class BlackPiece extends Piece {
    * 
    * @returns the image appropiate to this piece
    */
-  getPieceImg(): string {
+  get pieceImg(): string {
     switch (this.pieceType) {
       case 0: case 2: return 'assets/game/black-piece.svg';
     }

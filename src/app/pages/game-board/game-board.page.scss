@@ -5,6 +5,19 @@
     height: fit-content;
 }
 
+.space {
+    display: flex;
+    position: relative;
+    z-index: 1;
+}
+
+.piece {
+    margin-top: -3%;
+    position: absolute;
+    top: 0px;
+    z-index: 3;
+}
+
 ion-col {
     margin-top: -4px;
 }

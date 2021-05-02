@@ -33,7 +33,7 @@ const routes: Routes = [
     loadChildren: () => import('./pages/forgot-password/forgot-password.module').then(m => m.ForgotPasswordPageModule)
   },
   {
-    path: 'game-board/:rows/:cols/:wantsToStart/:aiType',
+    path: 'game-board/:roomId/:gameId/:rows/:cols',
     loadChildren: () => import('./pages/game-board/game-board.module').then(m => m.GameBoardPageModule),
     ...canActivate(redirectUnauthorizedToLogin)
   },

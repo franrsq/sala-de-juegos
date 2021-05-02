@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { LoadingController } from '@ionic/angular';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AlertController } from '@ionic/angular';
 import { BoardManager } from 'src/app/game/board-manager';
 import { CheckersEngine } from 'src/app/game/checkers/checkers-engine';
 import { CheckersBoardStyle } from 'src/app/game/checkers/checkers-style';
+import { Engine } from 'src/app/game/engine';
 import { FirebaseService } from 'src/app/services/firebase.service';
 
 @Component({
@@ -11,38 +12,56 @@ import { FirebaseService } from 'src/app/services/firebase.service';
   templateUrl: './game-board.page.html',
   styleUrls: ['./game-board.page.scss'],
 })
-export class GameBoardPage implements OnInit {
+export class GameBoardPage implements OnInit, OnDestroy {
   boardManager: BoardManager;
+  roomId;
 
   constructor(
-    private loadingController: LoadingController,
     private firebaseService: FirebaseService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router,
+    private alertController: AlertController
   ) { }
 
-  async ngOnInit() {
-    const strAiType = this.route.snapshot.paramMap.get('aiType');
-    const aiType = (!strAiType || strAiType == '-1') ? null : parseInt(strAiType);
+
+  ngOnInit() {
+    this.roomId = this.route.snapshot.paramMap.get('roomId');
+    const gameId = this.route.snapshot.paramMap.get('gameId');
     const rows = parseInt(this.route.snapshot.paramMap.get('rows'));
     const cols = parseInt(this.route.snapshot.paramMap.get('cols'));
-    const wantsToStart = parseInt(this.route.snapshot.paramMap.get('wantsToStart'));
 
     this.boardManager = new BoardManager(rows, cols,
-      new CheckersBoardStyle(), new CheckersEngine(this.firebaseService, aiType, wantsToStart));
-    this.loadingDialog();
-  }
-
-  async loadingDialog() {
-    const loading = await this.loadingController.create({
-      message: 'Cargando'
-    });
-    this.boardManager.isLoading().subscribe((isLoading) => {
-      if (isLoading) {
-        loading.present();
-      } else {
-        loading.dismiss();
+      new CheckersBoardStyle(), new CheckersEngine(this.firebaseService, gameId));
+    this.boardManager.getGameStatus().subscribe(status => {
+      if (status != Engine.GAME_IN_PLAY) {
+        this.showEndGameDialog(status);
       }
     });
+  }
+
+  async showEndGameDialog(status) {
+    const alert = await this.alertController.create({
+      header: 'Fin de partida',
+      message: status == Engine.GAME_WON ? 'Ganó. Siiuuuuuu!' :
+        status == Engine.GAME_FINISHED ? 'Juego finalizado' : 'Perdió. F',
+      buttons: [
+        {
+          text: 'Continuar'
+        }
+      ]
+    });
+    await alert.present();
+    alert.onDidDismiss().then(() => {
+      this.router.navigate(['room', this.roomId]);
+    });
+  }
+
+  spaceClick(space) {
+    this.boardManager.onClick(space.row, space.column);
+  }
+
+  ngOnDestroy(): void {
+    this.boardManager.destroyGame();
   }
 
 }

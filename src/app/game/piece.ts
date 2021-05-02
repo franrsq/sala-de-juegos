@@ -6,5 +6,5 @@ export abstract class Piece {
         this.pieceType = pieceType;
     }
 
-    abstract getPieceImg(): string;
+    abstract get pieceImg(): string;
 }
