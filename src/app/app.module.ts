@@ -16,6 +16,7 @@ import { AngularFireAuthModule } from "@angular/fire/auth";
 import { USE_EMULATOR as USE_AUTH_EMULATOR } from '@angular/fire/auth';
 import { USE_EMULATOR as USE_DATABASE_EMULATOR } from '@angular/fire/database';
 import { environment } from 'src/environments/environment';
+import { GooglePlus } from '@ionic-native/google-plus/ngx';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -44,7 +45,8 @@ export function createTranslateLoader(http: HttpClient) {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     { provide: USE_AUTH_EMULATOR, useValue: environment.useEmulators ? ['localhost', 9099] : undefined },
-    { provide: USE_DATABASE_EMULATOR, useValue: environment.useEmulators ? ['localhost', 9000] : undefined }
+    { provide: USE_DATABASE_EMULATOR, useValue: environment.useEmulators ? ['localhost', 9000] : undefined },
+    GooglePlus
   ],
   bootstrap: [AppComponent],
 })

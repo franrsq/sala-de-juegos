@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "495515336571",
+    "firebase_url": "https://sala-de-juegos-683c7-default-rtdb.firebaseio.com",
+    "project_id": "sala-de-juegos-683c7",
+    "storage_bucket": "sala-de-juegos-683c7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:495515336571:android:670e86c0c45fb816ec87de",
+        "android_client_info": {
+          "package_name": "com.proyecto.salajuegos"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "495515336571-hth5smjdmnt290jkee3c53apbeveae6t.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.proyecto.salajuegos",
+            "certificate_hash": "e70a3c11767adb61cae5f5bad9bf1e3378af0467"
+          }
+        },
+        {
+          "client_id": "495515336571-0fg9m76nafktfj1b7uov0ro41cedqhps.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyArYdvQlq2-5RqWmAeOano4-tZv-qjgBmY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "495515336571-0fg9m76nafktfj1b7uov0ro41cedqhps.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

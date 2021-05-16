@@ -5,13 +5,16 @@ import firebase from 'firebase/app';
 import { Router } from '@angular/router';
 import { take } from 'rxjs/operators';
 import { FirebaseService } from './firebase.service'
+import { GooglePlus } from '@ionic-native/google-plus/ngx';
+import { Capacitor } from '@capacitor/core';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  constructor(private afAuth: AngularFireAuth, private afDb: AngularFireDatabase, private router: Router,
-    private ngZone: NgZone, private injector: Injector) {
+  constructor(private afAuth: AngularFireAuth, private afDb: AngularFireDatabase,
+    private router: Router, private ngZone: NgZone, private injector: Injector,
+    private googlePlus: GooglePlus) {
 
     this.afAuth.onAuthStateChanged(async (user) => {
       // User sign out
@@ -42,7 +45,20 @@ export class AuthService {
     return this.afAuth.sendPasswordResetEmail(passwordResetEmail);
   }
 
-  googleAuth() {
+  async googleAuth() {
+    if (Capacitor.isNative) {
+      if (Capacitor.platform == 'android') {
+        let params = {
+          webClientId: '495515336571-0fg9m76nafktfj1b7uov0ro41cedqhps.apps.googleusercontent.com',
+          offline: true
+        };
+
+        const { idToken, accessToken } = await this.googlePlus.login(params);
+        const credential = accessToken ? firebase.auth.GoogleAuthProvider.credential(idToken, accessToken) :
+          firebase.auth.GoogleAuthProvider.credential(idToken);
+        return this.afAuth.signInWithCredential(credential);
+      }
+    }
     return this.authLogin(new firebase.auth.GoogleAuthProvider());
   }
 

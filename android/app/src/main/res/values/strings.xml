@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Sala de Juegos</string>
+    <string name="title_activity_main">Sala de Juegos</string>
+    <string name="package_name">com.proyecto.salajuegos</string>
+    <string name="custom_url_scheme">com.proyecto.salajuegos</string>
+</resources>
